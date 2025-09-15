@@ -10,7 +10,9 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     curl \
- && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    libpq-dev \
+ && docker-php-ext-install pdo_pgsql mbstring exif pcntl bcmath gd \
+ && docker-php-ext-enable pdo_pgsql
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
@@ -34,8 +36,8 @@ RUN if [ ! -f .env ]; then cp .env.example .env; fi
 RUN php artisan key:generate
 
 # Set proper permissions for Laravel storage and bootstrap/cache
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+ && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Expose Render's dynamic port
 EXPOSE 10000
